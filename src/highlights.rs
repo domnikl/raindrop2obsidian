@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
+use std::fmt::{Display, Formatter};
+use std::str::FromStr;
 use std::vec::IntoIter;
-
-trait Merge<T> {}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Highlight {
@@ -29,5 +29,31 @@ impl IntoIterator for Highlights {
 
     fn into_iter(self) -> Self::IntoIter {
         self.items.into_iter()
+    }
+}
+
+impl Display for Highlight {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let labels = &self
+            .tags
+            .iter()
+            .map(|e| format!("[[{}]]", e))
+            .collect::<Vec<String>>();
+
+        let text = &self
+            .text
+            .trim()
+            .replace("\r\n", "\n")
+            .replace('\r', "")
+            .replace('\n', "\n> ");
+
+        write!(
+            f,
+            "> {}\n\n[[{}]]\n{}\nsource: {}",
+            text,
+            self.title,
+            labels.join("\n"),
+            self.link
+        )
     }
 }

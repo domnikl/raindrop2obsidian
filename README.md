@@ -1,6 +1,6 @@
 # raindrop2obsidian
 
-A highly opinionated tool to help transfer highlights from raindrop.io to a format compatible with Obsidian.
+A highly opinionated tool to help transfer highlights from raindrop.io to a Markdown format compatible with Obsidian.
 
 ## What you'll need
 

@@ -2,12 +2,7 @@ use crate::highlights::{Highlight, Highlights};
 use std::cmp::min;
 use std::fmt::{Display, Formatter};
 use std::io::Error;
-use std::path::PathBuf;
-
-#[derive(Debug)]
-pub struct Obsidian {
-    output_path: PathBuf,
-}
+use std::path::{Path, PathBuf};
 
 struct FileName(String);
 
@@ -17,15 +12,19 @@ impl Display for FileName {
     }
 }
 
-impl Into<FileName> for String {
-    fn into(self) -> FileName {
-        // TODO: write a unit test for this!
+impl AsRef<Path> for FileName {
+    fn as_ref(&self) -> &Path {
+        (self.0).as_ref()
+    }
+}
 
+impl From<String> for FileName {
+    fn from(value: String) -> Self {
         let allowed: Vec<char> =
             "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+-.,%&() {}"
                 .chars()
                 .collect();
-        let file_name = self;
+        let file_name = value;
         let sanitized = file_name.replace(|c| !allowed.contains(&c), "");
         let normalized = sanitized.trim_end_matches('.');
 
@@ -35,49 +34,43 @@ impl Into<FileName> for String {
     }
 }
 
+#[derive(Debug)]
+pub struct Obsidian {
+    output_path: PathBuf,
+    add_tags: Vec<String>,
+}
+
 impl Obsidian {
-    pub fn new(output_path: PathBuf) -> Self {
-        Obsidian { output_path }
+    pub fn new(output_path: PathBuf, add_tags: Vec<String>) -> Self {
+        Obsidian {
+            output_path,
+            add_tags,
+        }
     }
 
-    pub fn import(&self, highlights: Highlights) -> Result<(), Error> {
-        for highlight in highlights {
-            let file_name: FileName = highlight.text.into();
+    pub async fn import(&self, highlights: Highlights) -> Result<(), Error> {
+        let h = highlights.into_iter();
 
-            println!("{}", file_name);
-
-            // TODO: create files asynchronously
-
-            // store highlight.to_string() in the file
+        for highlight in h {
+            let file_name: FileName = highlight.text.clone().into();
+            self.write_file(file_name, highlight).await?
         }
 
         Ok(())
     }
-}
 
-impl ToString for Highlight {
-    fn to_string(&self) -> String {
-        let labels = &self
-            .tags
-            .iter()
-            .map(|e| format!("[[{}]]", e))
-            .collect::<Vec<String>>();
+    async fn write_file(&self, file_name: FileName, highlight: Highlight) -> Result<(), Error> {
+        println!("writing {}", file_name);
 
-        // TODO: take care of line breaks in text
+        // TODO: make sure that output_path exists before writing into it!
 
-        let text = &self
-            .text
-            .trim()
-            .replace("\r\n", "\n")
-            .replace('\r', "")
-            .replace('\n', "\n> ");
+        let tags: Vec<String> = self.add_tags.iter().map(|e| format!("#{}", e)).collect();
+        let output_path = self.output_path.join(file_name);
+        let output = format!("{}\n\n{}\n", highlight, tags.join(" "));
 
-        format!(
-            "> {}\n\n[[{}]]\n{}\nsource: {}",
-            text,
-            self.title,
-            labels.join("\n"),
-            self.link
-        )
+        match tokio::fs::write(output_path, output).await {
+            Ok(_) => Ok(()),
+            Err(e) => Err(e),
+        }
     }
 }
