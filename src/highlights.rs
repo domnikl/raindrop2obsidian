@@ -1,3 +1,4 @@
+use crate::obsidian::FileName;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
@@ -38,7 +39,7 @@ impl Display for Highlight {
         let labels = &self
             .tags
             .iter()
-            .map(|e| format!("[[{}]]", e))
+            .map(|e| format!("[[{}]]", FileName::from(e.to_string())))
             .collect::<Vec<String>>();
 
         let text = &self
@@ -51,7 +52,7 @@ impl Display for Highlight {
         write!(
             f,
             "> {text}\n\n[[{}]]\n{}[[{}]]\nsource: {}",
-            self.title,
+            FileName::from(self.title.to_string()),
             labels.join("\n"),
             self.created.format("%Y-%m-%d"),
             self.link

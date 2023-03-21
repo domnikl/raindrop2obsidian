@@ -5,7 +5,7 @@ use std::fs;
 use std::io::Error;
 use std::path::{Path, PathBuf};
 
-struct FileName(String);
+pub struct FileName(String);
 
 impl Display for FileName {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
@@ -31,7 +31,7 @@ impl From<String> for FileName {
 
         let last = min(127, normalized.len());
 
-        FileName(format!("{}.md", &normalized[0..last]))
+        FileName(normalized[0..last].to_string())
     }
 }
 
@@ -61,12 +61,12 @@ impl Obsidian {
     }
 
     async fn write_file(&self, file_name: FileName, highlight: Highlight) -> Result<(), Error> {
-        println!("writing {}", file_name);
+        println!("writing {}.md", file_name);
 
         fs::create_dir_all(&self.output_path).expect("Error creating output path");
 
         let tags: Vec<String> = self.add_tags.iter().map(|e| format!("#{}", e)).collect();
-        let output_path = self.output_path.join(file_name);
+        let output_path = self.output_path.join(format!("{}.md", file_name));
         let output = format!("{}\n\n{}\n", highlight, tags.join(" "));
 
         match tokio::fs::write(output_path, output).await {
