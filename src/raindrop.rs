@@ -27,7 +27,7 @@ impl RaindropClient {
         let mut page = page;
 
         loop {
-            let per_page = 5;
+            let per_page = 50;
             let endpoint = "/rest/v1/highlights";
             let url = self.base_url.join(endpoint)?;
 
