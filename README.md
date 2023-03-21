@@ -18,6 +18,7 @@ Usage: raindrop2obsidian [OPTIONS] --output-path <OUTPUT_PATH>
 Options:
   -o, --output-path <OUTPUT_PATH>  Output directory, will be created if it doesn't exist
       --tag <TAG>                  Additional tags to add to the output
+      --overwrite                  Overwrite existing files with the same name
   -h, --help                       Print help
   -V, --version                    Print version
 ```

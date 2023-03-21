@@ -22,6 +22,9 @@ struct Args {
 
     #[arg(long, help = "Additional tags to add to the output")]
     tag: Vec<String>,
+
+    #[arg(long, help = "Overwrite existing files with the same name")]
+    overwrite: bool,
 }
 
 #[tokio::main(flavor = "current_thread")]
@@ -34,7 +37,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         env::var("RAINDROP_ACCESS_TOKEN").expect("RAINDROP_ACCESS_TOKEN must be set");
 
     let raindrop_client = RaindropClient::new(raindrop_access_token).unwrap();
-    let obsidian = Obsidian::new(args.output_path, args.tag);
+    let obsidian = Obsidian::new(args.output_path, args.tag, args.overwrite);
 
     let highlights = raindrop_client.highlights().await?;
     obsidian.import(highlights).await.expect("Unable to import");

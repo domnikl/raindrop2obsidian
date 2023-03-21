@@ -39,13 +39,15 @@ impl From<String> for FileName {
 pub struct Obsidian {
     output_path: PathBuf,
     add_tags: Vec<String>,
+    overwrite: bool,
 }
 
 impl Obsidian {
-    pub fn new(output_path: PathBuf, add_tags: Vec<String>) -> Self {
+    pub fn new(output_path: PathBuf, add_tags: Vec<String>, overwrite: bool) -> Self {
         Obsidian {
             output_path,
             add_tags,
+            overwrite,
         }
     }
 
@@ -61,17 +63,21 @@ impl Obsidian {
     }
 
     async fn write_file(&self, file_name: FileName, highlight: Highlight) -> Result<(), Error> {
-        println!("writing {}.md", file_name);
-
         fs::create_dir_all(&self.output_path).expect("Error creating output path");
 
         let tags: Vec<String> = self.add_tags.iter().map(|e| format!("#{}", e)).collect();
         let output_path = self.output_path.join(format!("{}.md", file_name));
         let output = format!("{}\n\n{}\n", highlight, tags.join(" "));
 
-        match tokio::fs::write(output_path, output).await {
-            Ok(_) => Ok(()),
-            Err(e) => Err(e),
-        }
+        return if self.overwrite || !output_path.exists() {
+            println!("writing {}.md", file_name);
+
+            match tokio::fs::write(output_path, output).await {
+                Ok(_) => Ok(()),
+                Err(e) => Err(e),
+            }
+        } else {
+            Ok(())
+        };
     }
 }
