@@ -17,6 +17,7 @@ Usage: raindrop2obsidian [OPTIONS] --output-path <OUTPUT_PATH>
 
 Options:
   -o, --output-path <OUTPUT_PATH>  Output directory, will be created if it doesn't exist
+  -i, --input-path <INPUT_PATH>    Input directory to search for connections to existing pages
       --tag <TAG>                  Additional tags to add to the output
       --overwrite                  Overwrite existing files with the same name
   -h, --help                       Print help

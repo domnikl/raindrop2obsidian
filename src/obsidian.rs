@@ -45,17 +45,27 @@ impl ObsidianVault {
         ObsidianVault { path }
     }
 
+    pub fn extract_notes(&self) -> Vec<String> {
+        fs::read_dir(&self.path)
+            .unwrap()
+            .map(|e| e.unwrap().file_name().to_str().unwrap().to_string())
+            .filter(|e| e.ends_with(".md"))
+            .map(|e| e.trim_end_matches(".md").to_string())
+            .collect::<Vec<String>>()
+    }
+
     pub async fn import(
         &self,
         highlights: Highlights,
         tags: &[String],
+        connections: &[String],
         overwrite: bool,
     ) -> Result<(), Error> {
         let h = highlights.into_iter();
 
         for highlight in h {
             let file_name: FileName = highlight.text.clone().into();
-            self.write_file(file_name, highlight, tags, overwrite)
+            self.write_file(file_name, highlight, tags, connections, overwrite)
                 .await?
         }
 
@@ -67,13 +77,18 @@ impl ObsidianVault {
         file_name: FileName,
         highlight: Highlight,
         tags: &[String],
+        connections: &[String],
         overwrite: bool,
     ) -> Result<(), Error> {
         fs::create_dir_all(&self.path).expect("Error creating output path");
 
         let tags: Vec<String> = tags.iter().map(|e| format!("#{}", e)).collect();
         let output_path = self.path.join(format!("{}.md", file_name));
-        let output = format!("{}\n\n{}\n", highlight, tags.join(" "));
+        let output = format!(
+            "{}\n\n{}\n",
+            highlight.to_string_with_connections(connections),
+            tags.join(" ")
+        );
 
         if overwrite || !output_path.exists() {
             println!("writing {}.md", file_name);
