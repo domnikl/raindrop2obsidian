@@ -4,7 +4,7 @@ mod raindrop;
 
 use clap::Parser;
 use dotenvy::dotenv;
-use obsidian::Obsidian;
+use obsidian::ObsidianVault;
 use raindrop::RaindropClient;
 use std::env;
 use std::error::Error;
@@ -37,10 +37,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
         env::var("RAINDROP_ACCESS_TOKEN").expect("RAINDROP_ACCESS_TOKEN must be set");
 
     let raindrop_client = RaindropClient::new(raindrop_access_token).unwrap();
-    let obsidian = Obsidian::new(args.output_path, args.tag, args.overwrite);
+    let obsidian = ObsidianVault::new(args.output_path);
 
     let highlights = raindrop_client.highlights().await?;
-    obsidian.import(highlights).await.expect("Unable to import");
+    obsidian
+        .import(highlights, &args.tag, args.overwrite)
+        .await
+        .expect("Unable to import");
 
     Ok(())
 }

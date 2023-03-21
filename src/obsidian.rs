@@ -36,40 +36,46 @@ impl From<String> for FileName {
 }
 
 #[derive(Debug)]
-pub struct Obsidian {
-    output_path: PathBuf,
-    add_tags: Vec<String>,
-    overwrite: bool,
+pub struct ObsidianVault {
+    path: PathBuf,
 }
 
-impl Obsidian {
-    pub fn new(output_path: PathBuf, add_tags: Vec<String>, overwrite: bool) -> Self {
-        Obsidian {
-            output_path,
-            add_tags,
-            overwrite,
-        }
+impl ObsidianVault {
+    pub fn new(path: PathBuf) -> Self {
+        ObsidianVault { path }
     }
 
-    pub async fn import(&self, highlights: Highlights) -> Result<(), Error> {
+    pub async fn import(
+        &self,
+        highlights: Highlights,
+        tags: &[String],
+        overwrite: bool,
+    ) -> Result<(), Error> {
         let h = highlights.into_iter();
 
         for highlight in h {
             let file_name: FileName = highlight.text.clone().into();
-            self.write_file(file_name, highlight).await?
+            self.write_file(file_name, highlight, tags, overwrite)
+                .await?
         }
 
         Ok(())
     }
 
-    async fn write_file(&self, file_name: FileName, highlight: Highlight) -> Result<(), Error> {
-        fs::create_dir_all(&self.output_path).expect("Error creating output path");
+    async fn write_file(
+        &self,
+        file_name: FileName,
+        highlight: Highlight,
+        tags: &[String],
+        overwrite: bool,
+    ) -> Result<(), Error> {
+        fs::create_dir_all(&self.path).expect("Error creating output path");
 
-        let tags: Vec<String> = self.add_tags.iter().map(|e| format!("#{}", e)).collect();
-        let output_path = self.output_path.join(format!("{}.md", file_name));
+        let tags: Vec<String> = tags.iter().map(|e| format!("#{}", e)).collect();
+        let output_path = self.path.join(format!("{}.md", file_name));
         let output = format!("{}\n\n{}\n", highlight, tags.join(" "));
 
-        return if self.overwrite || !output_path.exists() {
+        if overwrite || !output_path.exists() {
             println!("writing {}.md", file_name);
 
             match tokio::fs::write(output_path, output).await {
@@ -78,6 +84,6 @@ impl Obsidian {
             }
         } else {
             Ok(())
-        };
+        }
     }
 }
