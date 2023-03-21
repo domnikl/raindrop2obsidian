@@ -1,3 +1,4 @@
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
 use std::vec::IntoIter;
@@ -9,6 +10,7 @@ pub struct Highlight {
     pub text: String,
     pub color: Option<String>,
     pub tags: Vec<String>,
+    pub created: DateTime<Utc>,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]
@@ -48,10 +50,10 @@ impl Display for Highlight {
 
         write!(
             f,
-            "> {}\n\n[[{}]]\n{}\nsource: {}",
-            text,
+            "> {text}\n\n[[{}]]\n{}[[{}]]\nsource: {}",
             self.title,
             labels.join("\n"),
+            self.created.format("%Y-%m-%d"),
             self.link
         )
     }

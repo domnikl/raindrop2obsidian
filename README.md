@@ -1,6 +1,6 @@
 # raindrop2obsidian
 
-A highly opinionated tool to help transfer highlights from raindrop.io to a Markdown format compatible with Obsidian.
+A highly opinionated tool to automate transferring highlights from [raindrop.io](https://raindrop.io/) to a directory full of Markdown format compatible with Obsidian.
 
 ## What you'll need
 
@@ -8,4 +8,16 @@ Go to https://app.raindrop.io/settings/integrations and create a new app. Genera
 
 ```shell
 RAINDROP_ACCESS_TOKEN=xxx
+```
+
+## Usage
+
+```
+Usage: raindrop2obsidian [OPTIONS] --output-path <OUTPUT_PATH>
+
+Options:
+  -o, --output-path <OUTPUT_PATH>  Output directory, will be created if it doesn't exist
+      --tag <TAG>                  Additional tags to add to the output
+  -h, --help                       Print help
+  -V, --version                    Print version
 ```

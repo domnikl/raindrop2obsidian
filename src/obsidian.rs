@@ -1,6 +1,7 @@
 use crate::highlights::{Highlight, Highlights};
 use std::cmp::min;
 use std::fmt::{Display, Formatter};
+use std::fs;
 use std::io::Error;
 use std::path::{Path, PathBuf};
 
@@ -62,7 +63,7 @@ impl Obsidian {
     async fn write_file(&self, file_name: FileName, highlight: Highlight) -> Result<(), Error> {
         println!("writing {}", file_name);
 
-        // TODO: make sure that output_path exists before writing into it!
+        fs::create_dir_all(&self.output_path).expect("Error creating output path");
 
         let tags: Vec<String> = self.add_tags.iter().map(|e| format!("#{}", e)).collect();
         let output_path = self.output_path.join(file_name);

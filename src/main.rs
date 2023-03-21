@@ -13,10 +13,14 @@ use std::path::PathBuf;
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Args {
-    #[arg(short, long)]
+    #[arg(
+        short,
+        long,
+        help = "Output directory, will be created if it doesn't exist"
+    )]
     output_path: PathBuf,
 
-    #[arg(long)]
+    #[arg(long, help = "Additional tags to add to the output")]
     tag: Vec<String>,
 }
 
