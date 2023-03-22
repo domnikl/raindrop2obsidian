@@ -8,13 +8,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-      - uses: actions-rs/cargo@v1
+
+      - name: build
+        uses: actions-rs/cargo@v1
         with:
           command: build
           args: --release --all-features
-      - uses: actions-rs/cargo@v1
+
+      - name: test
+        uses: actions-rs/cargo@v1
         with:
           command: test
+
+      - name: test
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
