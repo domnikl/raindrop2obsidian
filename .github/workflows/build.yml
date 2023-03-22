@@ -24,7 +24,8 @@ jobs:
         with:
           command: test
 
-      - name: test
+      - name: clippy
         uses: actions-rs/cargo@v1
         with:
           command: clippy
+          args: --no-deps
