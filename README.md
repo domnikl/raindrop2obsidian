@@ -1,5 +1,8 @@
 # raindrop2obsidian
 
+[![build](https://github.com/domnikl/raindrop2obsidian/workflows/main/badge.svg)](https://github.com/domnikl/raindrop2obsidian/actions)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 A highly opinionated tool to automate transferring highlights from [raindrop.io](https://raindrop.io/) to a directory full of Markdown format compatible with Obsidian.
 
 ## What you'll need
