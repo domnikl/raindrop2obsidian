@@ -131,7 +131,7 @@ mod tests {
 
         let expected = "> This is the actual \n> text.\n\n[[This is foo]]\n[[tag1]]\n[[tag2]]\n[[2023-01-05]]\nsource: https://foo.bar\n";
 
-        assert_eq!(highlight.to_string_with_connections(&vec![]), expected);
+        assert_eq!(highlight.to_string_with_connections(&[]), expected);
     }
 
     #[test]
@@ -147,7 +147,7 @@ mod tests {
 
         let expected = "> This is the actual text.\n\n[[This is foo]]\n[[2023-12-31]]\nsource: https://foo.bar\n";
 
-        assert_eq!(highlight.to_string_with_connections(&vec![]), expected);
+        assert_eq!(highlight.to_string_with_connections(&[]), expected);
     }
 
     #[test]
@@ -165,7 +165,7 @@ mod tests {
             "> This is the actual [[text]].\n\n[[foo]]\n[[2023-12-31]]\nsource: https://foo.bar\n";
 
         assert_eq!(
-            highlight.to_string_with_connections(&vec!["text".to_string()]),
+            highlight.to_string_with_connections(&["text".to_string()]),
             expected
         );
     }

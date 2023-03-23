@@ -1,0 +1,35 @@
+name: PR
+
+on:
+  pull_request:
+    branches: [ main ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build_and_test:
+    name: Rust project
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macOS-latest ]
+        rust: [ stable, nightly ]
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: setup toolchain
+        uses: hecrj/setup-rust-action@v1
+        with:
+          rust-version: ${{ matrix.rust }}
+
+      - name: build
+        run: cargo build --release --all-features
+
+      - name: test
+        run: cargo test --all-features
+
+      - name: fmt
+        run: cargo fmt --all -- --check
