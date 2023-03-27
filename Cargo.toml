@@ -9,6 +9,6 @@ edition = "2021"
 chrono = { version = "0.4.24", features = ["serde"] }
 clap = { version = "4.1.13", features = ["derive"] }
 dotenvy = "0.15.7"
-reqwest = { version = "0.11.15", features = ["json"]}
+reqwest = { version = "0.11.16", features = ["json"]}
 serde = { version = "1.0.158", features = ["derive"] }
 tokio = { version = "1.26.0", features = ["macros", "fs"]}
